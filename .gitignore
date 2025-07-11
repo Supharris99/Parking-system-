@@ -1,0 +1,7 @@
+instance/
+flask_session/
+*.db
+*.db-journal
+models/best.pt
+__pycache__/
+.env 
