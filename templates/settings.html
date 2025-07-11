@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan - Sistem Parkir Otomatis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <style>
+        .navbar-brand {
+            font-weight: 600;
+        }
+        .settings-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .settings-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-light min-vh-100 d-flex flex-column">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary" href="/home">
+                <i class="bi bi-p-square-fill me-2"></i>Parkir Poli
+            </a>
+            <div class="ms-auto">
+                <a class="btn btn-outline-primary me-2" href="/home">
+                    <i class="bi bi-house me-1"></i>Home
+                </a>
+                <a class="btn btn-danger" href="/logout">
+                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-5 flex-grow-1">
+        <h2 class="mb-4">
+            <i class="bi bi-gear me-2"></i>Pengaturan Sistem
+        </h2>
+
+        <div class="row g-4">
+            <!-- Camera Settings -->
+            <div class="col-md-6">
+                <div class="card settings-card">
+                    <div class="card-body">
+                        <div class="text-center settings-icon text-primary">
+                            <i class="bi bi-camera-video"></i>
+                        </div>
+                        <h5 class="card-title text-center mb-4">Pengaturan Kamera</h5>
+                        <form id="cameraSettings">
+                            <div class="mb-3">
+                                <label class="form-label">Kamera</label>
+                                <select class="form-select" id="cameraSelect">
+                                    <option value="0">Kamera Default</option>
+                                    <option value="1">Kamera 1</option>
+                                    <option value="2">Kamera 2</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Resolusi</label>
+                                <select class="form-select" id="resolutionSelect">
+                                    <option value="640x480">640x480</option>
+                                    <option value="1280x720">1280x720</option>
+                                    <option value="1920x1080">1920x1080</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-save me-1"></i>Simpan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parking Settings -->
+            <div class="col-md-6">
+                <div class="card settings-card">
+                    <div class="card-body">
+                        <div class="text-center settings-icon text-success">
+                            <i class="bi bi-p-circle"></i>
+                        </div>
+                        <h5 class="card-title text-center mb-4">Pengaturan Parkir</h5>
+                        <form id="parkingSettings">
+                            <div class="mb-3">
+                                <label class="form-label">Total Slot Parkir</label>
+                                <input type="number" class="form-control" id="totalSlots" min="1" value="50">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Durasi Simpan Log (hari)</label>
+                                <input type="number" class="form-control" id="logRetention" min="1" value="30">
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-save me-1"></i>Simpan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings -->
+            <div class="col-md-6">
+                <div class="card settings-card">
+                    <div class="card-body">
+                        <div class="text-center settings-icon text-info">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+                        <h5 class="card-title text-center mb-4">Pengaturan Sistem</h5>
+                        <form id="systemSettings">
+                            <div class="mb-3">
+                                <label class="form-label">Interval Update (detik)</label>
+                                <input type="number" class="form-control" id="updateInterval" min="1" value="5">
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="autoStart">
+                                    <label class="form-check-label">Auto-start Deteksi</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-info w-100 text-white">
+                                <i class="bi bi-save me-1"></i>Simpan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backup Settings -->
+            <div class="col-md-6">
+                <div class="card settings-card">
+                    <div class="card-body">
+                        <div class="text-center settings-icon text-warning">
+                            <i class="bi bi-cloud-arrow-up"></i>
+                        </div>
+                        <h5 class="card-title text-center mb-4">Backup & Restore</h5>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-warning" onclick="backupData()">
+                                <i class="bi bi-cloud-download me-1"></i>Backup Data
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="restoreData()">
+                                <i class="bi bi-cloud-upload me-1"></i>Restore Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white text-center py-3 border-top">
+        <p class="mb-0">© 2024 Sistem Parkir Otomatis Politeknik Negeri Padang</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load current settings
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
+
+        function loadSettings() {
+            // TODO: Load settings from backend
+            // This is a placeholder for demonstration
+            document.getElementById('cameraSelect').value = '0';
+            document.getElementById('resolutionSelect').value = '1280x720';
+            document.getElementById('totalSlots').value = '50';
+            document.getElementById('logRetention').value = '30';
+            document.getElementById('updateInterval').value = '5';
+            document.getElementById('autoStart').checked = false;
+        }
+
+        // Save camera settings
+        document.getElementById('cameraSettings').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // TODO: Save camera settings to backend
+            alert('Pengaturan kamera berhasil disimpan');
+        });
+
+        // Save parking settings
+        document.getElementById('parkingSettings').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // TODO: Save parking settings to backend
+            alert('Pengaturan parkir berhasil disimpan');
+        });
+
+        // Save system settings
+        document.getElementById('systemSettings').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // TODO: Save system settings to backend
+            alert('Pengaturan sistem berhasil disimpan');
+        });
+
+        function backupData() {
+            // TODO: Implement backup functionality
+            alert('Fitur backup akan segera hadir');
+        }
+
+        function restoreData() {
+            // TODO: Implement restore functionality
+            alert('Fitur restore akan segera hadir');
+        }
+    </script>
+</body>
+</html> 

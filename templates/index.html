@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Parkir Politeknik Negeri Padang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #1a4789;      /* Biru PNP */
+            --secondary-color: #6c757d;
+            --accent-color: #ffc107;       /* Kuning PNP */
+            --success-color: #198754;
+            --danger-color: #dc3545;
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .header-title {
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 2rem;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            filter: brightness(0) invert(1); /* Membuat logo putih */
+        }
+
+        .header-title h2 {
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .admin-btn {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .admin-btn:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .admin-icon {
+            font-size: 1.3rem;
+        }
+
+        .camera-controls {
+            background: rgba(0,0,0,0.8);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .camera-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .camera-wrapper:hover .camera-controls {
+            opacity: 1;
+        }
+
+        .camera-select {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem;
+            color: #000;
+            font-size: 0.9rem;
+        }
+
+        .camera-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .camera-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .camera-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .camera-feed {
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 5px solid white;
+            transition: transform 0.3s ease;
+            object-fit: cover;
+        }
+
+        .detection-box {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .detection-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .owner-info {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .owner-info h4 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .status-box {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .status-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-box h6 {
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .status-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #ff4d4d);
+            border: none;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: #e9ecef;
+        }
+
+        .table td:first-child {
+            font-weight: 600;
+            color: var(--secondary-color);
+            width: 35%;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .detection-active {
+            animation: pulse 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 0.75rem 1rem;
+            }
+            
+            .header-logo {
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .header-title h2 {
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+            
+            .admin-btn {
+                width: auto;
+                justify-content: center;
+                margin-top: 0.5rem;
+                padding: 0.6rem 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .admin-icon {
+                font-size: 1.1rem;
+            }
+            
+            .header-title {
+                padding: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header-title">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-logo">
+                    <h2>SISTEM PARKIR POLITEKNIK NEGERI PADANG</h2>
+                </div>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light ms-auto">
+                    <i class="bi bi-person-lock"></i> Admin Panel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <!-- Left Column - Camera Feed -->
+            <div class="col-lg-7 mb-4">
+                <div class="text-center">
+                    <h3 class="section-title">
+                        <i class="bi bi-camera-fill me-2"></i>DETEKSI NOMOR PLAT
+                    </h3>
+                    <div class="camera-wrapper">
+                        <video id="cameraFeed" class="camera-feed" autoplay playsinline></video>
+                        <div class="camera-status" id="cameraStatus">
+                            <i class="bi bi-record-circle text-danger me-2"></i>
+                            <span>Mendeteksi...</span>
+                        </div>
+                        <div class="camera-controls">
+                            <select id="cameraSelect" class="camera-select">
+                                <option value="">Pilih Kamera...</option>
+                            </select>
+                            <button class="camera-btn" onclick="toggleCamera()">
+                                <i class="bi bi-camera-video-fill me-2"></i>Start Camera
+                            </button>
+                            <button class="camera-btn" onclick="toggleMirror()">
+                                <i class="bi bi-camera-video-flip me-2"></i>Mirror
+                            </button>
+                        </div>
+                    </div>
+                    <div class="detection-box">
+                        <button class="btn btn-primary me-3" onclick="startDetection()" id="startBtn">
+                            <i class="bi bi-play-fill me-2"></i>Mulai Deteksi
+                        </button>
+                        <button class="btn btn-danger" onclick="stopDetection()" id="stopBtn" disabled>
+                            <i class="bi bi-stop-fill me-2"></i>Stop Deteksi
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Owner Info -->
+            <div class="col-lg-5">
+                <div class="owner-info">
+                    <h4 class="text-center">
+                        <i class="bi bi-person-circle me-2"></i>NAMA PEMILIK MOTOR
+                    </h4>
+                    <div id="ownerInfo" class="text-center">
+                        <p class="h5 mb-4">-</p>
+                    </div>
+                    <h4 class="text-center">
+                        <i class="bi bi-card-text me-2"></i>BIODATA PEMILIK
+                    </h4>
+                    <div id="ownerDetails">
+                        <table class="table">
+                            <tr>
+                                <td><i class="bi bi-person-badge me-2"></i>NIM</td>
+                                <td>: <span id="ownerNim">-</span></td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-book me-2"></i>Jurusan</td>
+                                <td>: <span id="ownerMajor">-</span></td>
+                            </tr>
+                            <tr>
+                                <td><i class="bi bi-telephone me-2"></i>No. HP</td>
+                                <td>: <span id="ownerPhone">-</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Status Boxes -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="status-box">
+                            <i class="bi bi-box-arrow-in-right text-success mb-2" style="font-size: 1.5rem;"></i>
+                            <h6>Motor masuk</h6>
+                            <div class="status-value" id="motorMasuk">0</div>
+                            </div>
+                            </div>
+                    <div class="col-md-4">
+                        <div class="status-box">
+                            <i class="bi bi-box-arrow-left text-danger mb-2" style="font-size: 1.5rem;"></i>
+                            <h6>Motor Keluar</h6>
+                            <div class="status-value" id="motorKeluar">0</div>
+                            </div>
+                            </div>
+                    <div class="col-md-4">
+                        <div class="status-box">
+                            <i class="bi bi-p-square text-primary mb-2" style="font-size: 1.5rem;"></i>
+                            <h6>Slot</h6>
+                            <div class="status-value" id="slotTersedia">0</div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        let isDetecting = false;
+        let stream = null;
+        let videoTrack = null;
+        let isMirrored = false;
+        let socket = null;
+
+        // Initialize camera handling
+        async function initializeCamera() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                const cameraSelect = document.getElementById('cameraSelect');
+                
+                cameraSelect.innerHTML = '<option value="">Pilih Kamera...</option>';
+                videoDevices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+                    cameraSelect.appendChild(option);
+                });
+
+                // If only one camera is available, select it automatically
+                if (videoDevices.length === 1) {
+                    cameraSelect.value = videoDevices[0].deviceId;
+                    startCamera(videoDevices[0].deviceId);
+                }
+            } catch (error) {
+                console.error('Error initializing camera:', error);
+                alert('Tidak dapat mengakses kamera. Pastikan browser memiliki izin untuk mengakses kamera.');
+            }
+        }
+
+        // Start camera with selected device
+        async function startCamera(deviceId = '') {
+            const video = document.getElementById('cameraFeed');
+            const constraints = {
+                video: {
+                    deviceId: deviceId ? { exact: deviceId } : undefined,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }
+            };
+
+            try {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                videoTrack = stream.getVideoTracks()[0];
+                
+                // Enable detection button once camera is running
+                document.getElementById('startBtn').disabled = false;
+                
+                // Update camera status
+                document.querySelector('.camera-btn').innerHTML = 
+                    '<i class="bi bi-camera-video-off-fill me-2"></i>Stop Camera';
+                
+                // Reconnect Socket.IO if needed
+                if (!socket || !socket.connected) {
+                    connectSocket();
+                }
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                showAlert('danger', 'Tidak dapat mengakses kamera. Pastikan browser memiliki izin untuk mengakses kamera.');
+            }
+        }
+
+        // Toggle camera on/off
+        function toggleCamera() {
+            const video = document.getElementById('cameraFeed');
+            const btn = document.querySelector('.camera-btn');
+            
+            if (stream && stream.active) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                stream = null;
+                btn.innerHTML = '<i class="bi bi-camera-video-fill me-2"></i>Start Camera';
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = true;
+                if (isDetecting) {
+                    stopDetection();
+                }
+            } else {
+                const deviceId = document.getElementById('cameraSelect').value;
+                startCamera(deviceId);
+            }
+        }
+
+        // Mirror/unmirror camera
+        function toggleMirror() {
+            const video = document.getElementById('cameraFeed');
+            isMirrored = !isMirrored;
+            video.style.transform = isMirrored ? 'scaleX(-1)' : '';
+        }
+
+        // Camera device selection
+        document.getElementById('cameraSelect').addEventListener('change', function(e) {
+            if (e.target.value) {
+                startCamera(e.target.value);
+            }
+        });
+
+        // Start detection
+        function startDetection() {
+            if (!stream || !stream.active) {
+                showAlert('danger', 'Silakan aktifkan kamera terlebih dahulu');
+                return;
+            }
+            
+            if (socket && socket.connected) {
+                socket.emit('message', { action: 'start_detection' });
+                isDetecting = true;
+                document.getElementById('cameraFeed').classList.add('detection-active');
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                
+                // Mulai kirim frame
+                sendFrameToServer();
+            } else {
+                showAlert('danger', 'Koneksi ke server terputus');
+            }
+        }
+
+        function sendFrameToServer() {
+            if (!stream || !stream.active || !isDetecting) return;
+            
+            const video = document.getElementById('cameraFeed');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            // Convert frame ke base64 dengan kualitas yang lebih baik
+            const frame = canvas.toDataURL('image/jpeg', 0.9);
+            
+            // Kirim frame ke server
+            if (socket && socket.connected) {
+                socket.emit('message', {
+                    type: 'frame',
+                    data: frame
+                });
+            }
+            
+            // Kirim frame berikutnya dengan delay untuk mengurangi beban
+            setTimeout(() => {
+                requestAnimationFrame(sendFrameToServer);
+            }, 100); // Delay 100ms antara frame
+        }
+
+        // Stop detection
+        function stopDetection() {
+            if (socket && socket.connected) {
+                socket.emit('message', { action: 'stop_detection' });
+                isDetecting = false;
+                document.getElementById('cameraFeed').classList.remove('detection-active');
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+            }
+        }
+
+        // Initialize camera when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCamera();
+            connectSocket();
+        });
+
+        // Update owner info when plate is detected
+        function updateOwnerInfo(data) {
+            const ownerInfo = document.getElementById('ownerInfo');
+            if (data.found) {
+                ownerInfo.innerHTML = `
+                    <p class="h4 mb-4 text-success">
+                        <i class="bi bi-check-circle-fill me-2"></i>${data.name}
+                    </p>
+                `;
+                document.getElementById('ownerNim').textContent = data.nim;
+                document.getElementById('ownerMajor').textContent = data.major;
+                document.getElementById('ownerPhone').textContent = data.phone;
+            } else {
+                ownerInfo.innerHTML = `
+                    <p class="h4 mb-4 text-danger">
+                        <i class="bi bi-x-circle-fill me-2"></i>Plat Nomor Tidak Terdaftar
+                    </p>
+                `;
+                document.getElementById('ownerNim').textContent = '-';
+                document.getElementById('ownerMajor').textContent = '-';
+                document.getElementById('ownerPhone').textContent = '-';
+            }
+        }
+
+        // Update parking status with animation
+        function updateStatus() {
+            // Hitung motor masuk (active parking)
+            fetch('/api/parking/active')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Active parking data:', data);
+                    if (data.status === 'success') {
+                        const count = data.count || 0;
+                        animateValue('motorMasuk', count);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching active parking:', error);
+                });
+            
+            // Hitung motor keluar (completed parking)
+            fetch('/api/parking/history?status=completed&limit=1000')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Parking history data:', data);
+                    if (data.status === 'success') {
+                        const count = data.count || 0;
+                        animateValue('motorKeluar', count);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching parking history:', error);
+                });
+            
+            // Hitung slot tersedia
+            fetch('/api/parking/active')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const totalSlot = 100; // Total slot parkir
+                        const availableSlot = totalSlot - (data.count || 0);
+                        animateValue('slotTersedia', availableSlot);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error calculating available slots:', error);
+                });
+        }
+
+        // Animate number changes
+        function animateValue(elementId, newValue) {
+            const element = document.getElementById(elementId);
+            const currentValue = parseInt(element.textContent) || 0;
+            if (currentValue !== newValue) {
+                element.style.transform = 'scale(1.1)';
+                element.style.color = '#0d6efd';
+                setTimeout(() => {
+                    element.textContent = newValue;
+                    element.style.transform = 'scale(1)';
+                    element.style.color = '';
+                }, 300);
+            }
+        }
+
+        // Update status every 5 seconds
+        setInterval(updateStatus, 5000);
+
+        // Initial update
+        updateStatus();
+
+        // Socket.IO connection
+        function connectSocket() {
+            socket = io();
+            
+            socket.on('connect', function() {
+                console.log('Socket.IO connected');
+                document.getElementById('cameraStatus').style.display = 'block';
+                showAlert('success', 'Terhubung ke server');
+            });
+            
+            socket.on('disconnect', function() {
+                console.log('Socket.IO disconnected');
+                document.getElementById('cameraStatus').style.display = 'none';
+                showAlert('warning', 'Koneksi terputus, mencoba menghubungkan kembali...');
+                // Reconnect after 5 seconds
+                setTimeout(connectSocket, 5000);
+            });
+            
+            socket.on('detection', function(data) {
+                console.log('Detection result:', data);
+                // Update UI dengan hasil deteksi
+                const plate = data.license_plate;
+                if (plate) {
+                    console.log('Plate detected:', plate);
+                    detectPlate(plate);
+                    showAlert('success', `Plat nomor terdeteksi: ${plate}`);
+                }
+            });
+            
+            socket.on('error', function(data) {
+                console.error('Server error:', data);
+                showAlert('danger', data.message);
+            });
+        }
+
+        // Deteksi plat (manual)
+        document.getElementById('detectBtn').onclick = function() {
+            const plate = document.getElementById('manualPlate').value.trim().toUpperCase();
+            if (!plate) {
+                showAlert('danger', 'Masukkan plat nomor terlebih dahulu!');
+                return;
+            }
+            detectPlate(plate);
+        };
+
+        function detectPlate(plate) {
+            // Reset tampilan
+            document.getElementById('ownerInfo').innerHTML = '<p class="h5 mb-4">-</p>';
+            document.getElementById('ownerNim').textContent = '-';
+            document.getElementById('ownerMajor').textContent = '-';
+            document.getElementById('ownerPhone').textContent = '-';
+            
+            // Cek plat ke backend
+            fetch(`/api/mahasiswa/plate/${encodeURIComponent(plate)}`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Response from server:', data);
+                    if (data.status === 'success' && data.data) {
+                        // Tampilkan info pemilik
+                        const owner = data.data;
+                        document.getElementById('ownerInfo').innerHTML = 
+                            `<p class="h5 mb-4 text-success">
+                                <i class="bi bi-check-circle-fill me-2"></i>${owner.name}
+                            </p>`;
+                        document.getElementById('ownerNim').textContent = owner.nim;
+                        document.getElementById('ownerMajor').textContent = owner.major;
+                        document.getElementById('ownerPhone').textContent = owner.phone;
+                        
+                        // Cek status parkir
+                        checkParkingStatus(plate);
+                    } else {
+                        // Tampilkan pesan error
+                        document.getElementById('ownerInfo').innerHTML = 
+                            `<p class="h5 mb-4 text-danger">
+                                <i class="bi bi-x-circle-fill me-2"></i>Plat Nomor Tidak Terdaftar
+                            </p>`;
+                        showAlert('warning', 'Plat tidak terdaftar di database!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'Terjadi kesalahan saat memeriksa data plat');
+                });
+        }
+
+        // Fungsi untuk menampilkan alert
+        function showAlert(type, message) {
+            console.log(`Alert [${type}]:`, message);
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Hapus alert setelah 5 detik
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

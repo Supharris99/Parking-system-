@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Parkir - Sistem Parkir PNP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #1a4789;
+            --secondary-color: #6c757d;
+            --accent-color: #ffc107;
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .header-title {
+            background: linear-gradient(135deg, var(--primary-color), #2563eb);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-title h2 {
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 2rem;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 50px;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .back-btn:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .history-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .history-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-section .form-control {
+            max-width: 200px;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .table td, .table th {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .status-masuk {
+            background-color: #e6f4ea;
+            color: #1e7e34;
+        }
+
+        .status-keluar {
+            background-color: #fef3f2;
+            color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 0.75rem 1rem;
+            }
+
+            .header-title h2 {
+                font-size: 1.5rem;
+            }
+
+            .back-btn {
+                width: auto;
+                justify-content: center;
+            }
+
+            .history-card {
+                padding: 1.5rem;
+            }
+
+            .filter-section {
+                flex-direction: column;
+            }
+
+            .filter-section .form-control {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header-title">
+        <div class="container">
+            <div class="header-content">
+                <h2>HISTORY PARKIR</h2>
+                <a href="{{ url_for('admin') }}" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                    Kembali ke Admin
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="history-container">
+        <div class="history-card">
+            <div class="filter-section">
+                <input type="date" class="form-control" id="startDate" placeholder="Tanggal Mulai">
+                <input type="date" class="form-control" id="endDate" placeholder="Tanggal Akhir">
+                <select class="form-control" id="statusFilter">
+                    <option value="">Semua Status</option>
+                    <option value="MASUK">Masuk</option>
+                    <option value="KELUAR">Keluar</option>
+                </select>
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    <i class="bi bi-funnel-fill me-2"></i>
+                    Filter
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>NIM</th>
+                            <th>Nama</th>
+                            <th>Plat Nomor</th>
+                            <th>No. Slot</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Format tanggal ke format Indonesia
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
+            };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        // Format waktu ke format 24 jam
+        function formatTime(dateString) {
+            const options = { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false
+            };
+            return new Date(dateString).toLocaleTimeString('id-ID', options);
+        }
+
+        // Fungsi untuk memuat data history
+        async function loadHistory() {
+            try {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const status = document.getElementById('statusFilter').value;
+
+                let url = '/api/parking/history';
+                const params = new URLSearchParams();
+                if (startDate) params.append('start_date', startDate);
+                if (endDate) params.append('end_date', endDate);
+                if (status) params.append('status', status);
+                if (params.toString()) url += '?' + params.toString();
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const tbody = document.getElementById('historyTableBody');
+                tbody.innerHTML = '';
+
+                data.forEach(log => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(log.timestamp)}</td>
+                        <td>${formatTime(log.timestamp)}</td>
+                        <td>${log.nim || '-'}</td>
+                        <td>${log.student_name || '-'}</td>
+                        <td>${log.license_plate}</td>
+                        <td>${log.slot_number}</td>
+                        <td>
+                            <span class="status-badge ${log.status.toLowerCase() === 'masuk' ? 'status-masuk' : 'status-keluar'}">
+                                ${log.status}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal memuat data history');
+            }
+        }
+
+        // Fungsi untuk menerapkan filter
+        function applyFilters() {
+            loadHistory();
+        }
+
+        // Load data saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+        });
+    </script>
+</body>
+</html> 
